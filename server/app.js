@@ -84,22 +84,54 @@ app.post('/signup', (req, res, next) => {
   var password = req.body.password;
   models.Users.get({username})
     .then(user => {
-      //console.log(user);
       if (user) {
-        throw user;
+        //redirect user to login page
+        // res.status(303).send('/signup');
+        res.redirect("/signup");
+        //res.send <--- JSON, status code, text, res.sendFile <--static file that won't change, if dealing with variables use--> res.render, mostly use render even with static files
       }
-      console.log('creating user');
       models.Users.create({username, password});
-      console.log('user created');
     })
+      .then((err) => {
+        if (err) {
+          throw err;
+        }
+        // app.get('/', auth.)
+        res.redirect('/');
+
+
+        //use get request
+          //in body of response do res.render
+      });
 });
   //send req.body.username and req.body.password to
   //Users.get to check if user name is taken
   //if it isn't, create a new user with Users.create
+//NEXT STEPS:
+  //finishing app.post authentication routes
+    //how far do we go into directing the user to the next place
+app.post('/login', (req, res, next) => {
+  var username = req.body.username;
+  var password = req.body.password;
+  models.Users.get({username})
+    .then(user => {
+      //if error-- redirect to signup
+      models.Users.compare(password, user.password, user.salt);
+    })
+    .then(result => {
+      if (false) {
+        throw (false);
+      }
+      //take user to ... include--- auth in get request
+    });
+  });
+  //if there's no username
+    //throw user
+  //get the password from users
+  //SELECT users.password FROM users WHERE users.username = username
+  //compare it to attempted password
+  //models.Users.compare()
 
-// app.post('/login', (req, res, next) =>
-//   //send req.body.username and req.body.password to....
-// )
 
 
 /************************************************************/
