@@ -98,10 +98,6 @@ app.post('/signup', (req, res, next) => {
         }
         // app.get('/', auth.)
         res.redirect('/');
-
-
-        //use get request
-          //in body of response do res.render
       });
 });
   //send req.body.username and req.body.password to
@@ -114,23 +110,22 @@ app.post('/login', (req, res, next) => {
   var username = req.body.username;
   var password = req.body.password;
   models.Users.get({username})
-    .then(user => {
-      //if error-- redirect to signup
-      models.Users.compare(password, user.password, user.salt);
+    .then((err, user) => {
+      if (err) {
+        throw err;
+      }
+      if (user) {
+        models.Users.compare(password, user.password, user.salt);
+      }
     })
     .then(result => {
       if (false) {
         throw (false);
       }
-      //take user to ... include--- auth in get request
+      res.redirect('/');
     });
-  });
-  //if there's no username
-    //throw user
-  //get the password from users
-  //SELECT users.password FROM users WHERE users.username = username
-  //compare it to attempted password
-  //models.Users.compare()
+});
+
 
 
 
