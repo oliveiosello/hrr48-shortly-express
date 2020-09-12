@@ -17,17 +17,17 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 
 
-app.get('/', 
+app.get('/',
 (req, res) => {
   res.render('index');
 });
 
-app.get('/create', 
+app.get('/create',
 (req, res) => {
   res.render('index');
 });
 
-app.get('/links', 
+app.get('/links',
 (req, res, next) => {
   models.Links.getAll()
     .then(links => {
@@ -38,7 +38,7 @@ app.get('/links',
     });
 });
 
-app.post('/links', 
+app.post('/links',
 (req, res, next) => {
   var url = req.body.url;
   if (!models.Links.isValidUrl(url)) {
@@ -77,7 +77,29 @@ app.post('/links',
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+//route post request from /login
+//route post request from /signup
+app.post('/signup', (req, res, next) => {
+  var username = req.body.username;
+  var password = req.body.password;
+  models.Users.get({username})
+    .then(user => {
+      //console.log(user);
+      if (user) {
+        throw user;
+      }
+      console.log('creating user');
+      models.Users.create({username, password});
+      console.log('user created');
+    })
+});
+  //send req.body.username and req.body.password to
+  //Users.get to check if user name is taken
+  //if it isn't, create a new user with Users.create
 
+// app.post('/login', (req, res, next) =>
+//   //send req.body.username and req.body.password to....
+// )
 
 
 /************************************************************/
