@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const Auth = require('./middleware/auth');
 const models = require('./models');
 
+
 const app = express();
 
 app.set('views', `${__dirname}/views`);
@@ -14,6 +15,8 @@ app.use(partials());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
+app.use(require('./middleware/cookieParser'));
+app.use(Auth.createSession);
 
 app.get('/', (req, res) => {
   res.render('index');
@@ -88,27 +91,20 @@ app.post('/signup', (req, res, next) => {
   models.Users.get({ username })
     .then((user) => {
       if (user) {
-        //redirect user to login page
-        // res.status(303).send('/signup');
         res.redirect('/signup');
         //res.send <--- JSON, status code, text, res.sendFile <--static file that won't change, if dealing with variables use--> res.render, mostly use render even with static files
       }
-      models.Users.create({ username, password });
+      return models.Users.create({ username, password });
     })
-    .then((err) => {
-      if (err) {
-        throw err;
-      }
+    .then((result) => {
+
+      // Auth.verifySession
       // app.get('/', auth.)
       res.redirect('/');
     });
 });
-//send req.body.username and req.body.password to
-//Users.get to check if user name is taken
-//if it isn't, create a new user with Users.create
-//NEXT STEPS:
-//finishing app.post authentication routes
-//how far do we go into directing the user to the next place
+
+
 app.post('/login', (req, res, next) => {
   var username = req.body.username;
   var password = req.body.password;
